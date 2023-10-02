@@ -268,3 +268,68 @@ func PrintDB() {
 		return
 	}
 }
+
+func Handler(gender int) (string, error) {
+	//создание каналов
+	var phoneNum string
+	var pass string
+	var region string
+	var numCard string
+	var cvv string
+	var surname string
+	var name string
+	var patronymic string
+
+	//запись данных
+	switch gender {
+	case 7:
+		surnameMale := ParseTxt("assets/familii_m.txt")
+		nameMale := ParseTxt("assets/imena_m.txt")
+		patronymicMale := ParseTxt("assets/otchestva_m.txt")
+		phoneNum = PhoneNumber()
+		pass, region = Pass()
+		numCard, cvv = Card()
+		surname = GetWord(surnameMale)
+		name = GetWord(nameMale)
+		patronymic = GetWord(patronymicMale)
+	case 8:
+		surnameFemale := ParseTxt("assets/familii_zh.txt")
+		nameFemale := ParseTxt("assets/imena_zh.txt")
+		patronymicFemale := ParseTxt("assets/otchestva_zh.txt")
+		phoneNum = PhoneNumber()
+		pass, region = Pass()
+		numCard, cvv = Card()
+		surname = GetWord(surnameFemale)
+		name = GetWord(nameFemale)
+		patronymic = GetWord(patronymicFemale)
+	}
+
+	resultStr := fmt.Sprintf("\nФИО: %s %s %s\nНомер телефона: %s\nСерия, номер паспорта: %s\nДанные карты(номер, CVV): %s | %s\nСубъект РФ: %s",
+		surname, name, patronymic, phoneNum, pass, numCard, cvv, region)
+
+	return resultStr, nil
+}
+
+func Startapp() {
+	for {
+		fmt.Println("\nВыберите пол (7 - мужской, 8 - женский, 56 - выход):")
+		var gender int
+		_, err := fmt.Scanln(&gender)
+		if err != nil {
+			fmt.Println("Ошибка при вводе:", err)
+			continue
+		}
+
+		result, err := Handler(gender)
+		if err != nil {
+			fmt.Println("Ошибка:", err)
+		} else if result == "suka" {
+			break // Выход из цикла при выборе 56
+		} else if result == "blyat" {
+			continue // Продолжаем цикл при некорректном выборе
+		}
+
+		fmt.Println(result)
+	}
+
+}

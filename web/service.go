@@ -15,7 +15,7 @@ func ServerTest() {
 	}))
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{"Hello": "world"})
+		return c.JSON(fiber.Map{"Hello": "alex"})
 	})
 
 	app.Listen(":3000")
