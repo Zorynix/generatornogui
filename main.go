@@ -2,11 +2,11 @@ package main
 
 import (
 	_ "golang.org/x/sys/windows"
-	"utils/utils"
+	"utils/menu"
 )
 
 func main() {
 	//service.ServerTest()
-	//menu.Menu()
-	utils.Startapp()
+	menu.Menu()
+	//utils.Startapp()
 }

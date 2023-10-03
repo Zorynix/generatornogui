@@ -269,7 +269,7 @@ func PrintDB() {
 	}
 }
 
-func Handler(gender int) (string, error) {
+func Handler(gender int) string {
 	//создание каналов
 	var phoneNum string
 	var pass string
@@ -307,7 +307,7 @@ func Handler(gender int) (string, error) {
 	resultStr := fmt.Sprintf("\nФИО: %s %s %s\nНомер телефона: %s\nСерия, номер паспорта: %s\nДанные карты(номер, CVV): %s | %s\nСубъект РФ: %s",
 		surname, name, patronymic, phoneNum, pass, numCard, cvv, region)
 
-	return resultStr, nil
+	return resultStr
 }
 
 func Startapp() {
@@ -320,7 +320,7 @@ func Startapp() {
 			continue
 		}
 
-		result, err := Handler(gender)
+		result := Handler(gender)
 		if err != nil {
 			fmt.Println("Ошибка:", err)
 		} else if result == "suka" {
