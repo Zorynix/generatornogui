@@ -4,12 +4,24 @@ import (
 	"database/sql"
 	"encoding/csv"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
 	"math/rand"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	_ "github.com/mattn/go-sqlite3"
+)
+
+var (
+	phoneNum   string
+	pass       string
+	region     string
+	numCard    string
+	cvv        string
+	surname    string
+	name       string
+	patronymic string
 )
 
 func randomGenerateInt(min, max int) int {
@@ -43,7 +55,6 @@ func PhoneNumber() string {
 	partThree := randomGenerateInt(10, 99)
 	partFour := randomGenerateInt(10, 99)
 	fullNumber = code + " " + strconv.Itoa(partOne) + " " + strconv.Itoa(partTwo) + " " + strconv.Itoa(partThree) + " " + strconv.Itoa(partFour)
-	//fmt.Println(fullNumber)
 	return fullNumber
 }
 
@@ -90,7 +101,7 @@ func Pass() (string, string) {
 	defer func(db *sql.DB) {
 		err := db.Close()
 		if err != nil {
-
+			return
 		}
 	}(db)
 
@@ -105,8 +116,7 @@ func Pass() (string, string) {
 
 func Card() (string, string) {
 	var num string
-	var cvv string
-	cvv = strconv.Itoa(randomGenerateInt(100, 999))
+	cvv := strconv.Itoa(randomGenerateInt(100, 999))
 	firstPart := strconv.Itoa(randomGenerateInt(2, 6))
 	secondPart := strconv.Itoa(randomGenerateInt(100, 999))
 	thirdPart := strconv.Itoa(randomGenerateInt(1000, 9999))
@@ -118,17 +128,12 @@ func Card() (string, string) {
 
 func ParseTxt(path string) []string {
 
-	//читаем содержимое
 	content, err := os.ReadFile(path)
 	if err != nil {
 		return []string{"Ошибка чтения"}
 	}
 
-	//преорбразуем
 	dock := strings.Split(string(content), "\n")
-	//for _, line := range dock {
-	//	fmt.Println(line)
-	//}
 
 	var result []string
 	for _, line := range dock {
@@ -141,16 +146,12 @@ func ParseTxt(path string) []string {
 }
 
 func GetWord(fio []string) string {
-	// Создание генератора случайных чисел с использованием текущего времени как источника
 	rand.NewSource(time.Now().Unix())
-	// Получение случайного индекса из массива
 	randomIndex := rand.Intn(len(fio))
-	// Извлечение случайного слова из массива
 	return fio[randomIndex]
 }
 
 func CheckDB() {
-	//const filePath = "C:\\Users\\Alex\\GolandProjects\\mprj1"
 	if _, err := os.Stat("cities.db"); err != nil {
 		if os.IsNotExist(err) {
 			fmt.Println("Database does not exist, creating...")
@@ -159,7 +160,6 @@ func CheckDB() {
 	} else {
 		fmt.Println("Database exist")
 	}
-	return
 }
 
 func DBParse() {
@@ -171,11 +171,10 @@ func DBParse() {
 	defer func(db *sql.DB) {
 		err := db.Close()
 		if err != nil {
-
+			return
 		}
 	}(db)
 
-	// Создание таблицы
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS my_table (
 						subject TEXT,
 						okato INTEGER
@@ -185,7 +184,6 @@ func DBParse() {
 		return
 	}
 
-	// Открытие CSV-файла
 	file, err := os.Open("assets/cities.csv")
 	if err != nil {
 		fmt.Println("Ошибка открытия CSV-файла:", err)
@@ -194,11 +192,10 @@ func DBParse() {
 	defer func(file *os.File) {
 		err := file.Close()
 		if err != nil {
-
+			return
 		}
 	}(file)
 
-	// Чтение CSV-файла
 	reader := csv.NewReader(file)
 	data, err := reader.ReadAll()
 	if err != nil {
@@ -206,7 +203,6 @@ func DBParse() {
 		return
 	}
 
-	// Вставка данных в таблицу
 	for _, row := range data {
 		subject := row[0]
 		okato, err := strconv.Atoi(row[1])
@@ -234,11 +230,10 @@ func PrintDB() {
 	defer func(db *sql.DB) {
 		err := db.Close()
 		if err != nil {
-
+			return
 		}
 	}(db)
 
-	// Выполнение запроса на выборку данных
 	rows, err := db.Query("SELECT subject, okato FROM my_table")
 	if err != nil {
 		fmt.Println("Error querying data:", err)
@@ -247,11 +242,10 @@ func PrintDB() {
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
-
+			return
 		}
 	}(rows)
 
-	// Обработка результатов
 	for rows.Next() {
 		var subject string
 		var okato int
@@ -270,17 +264,7 @@ func PrintDB() {
 }
 
 func Handler(gender int) string {
-	//создание каналов
-	var phoneNum string
-	var pass string
-	var region string
-	var numCard string
-	var cvv string
-	var surname string
-	var name string
-	var patronymic string
 
-	//запись данных
 	switch gender {
 	case 7:
 		surnameMale := ParseTxt("assets/familii_m.txt")
@@ -312,7 +296,7 @@ func Handler(gender int) string {
 
 func Startapp() {
 	for {
-		fmt.Println("\nВыберите пол (7 - мужской, 8 - женский, 56 - выход):")
+		fmt.Println("\nВыберите пол (7 - мужской, 8 - женский, exit - выход):")
 		var gender int
 		_, err := fmt.Scanln(&gender)
 		if err != nil {
@@ -323,9 +307,9 @@ func Startapp() {
 		result := Handler(gender)
 		if err != nil {
 			fmt.Println("Ошибка:", err)
-		} else if result == "suka" {
+		} else if result == "exit" {
 			break // Выход из цикла при выборе 56
-		} else if result == "blyat" {
+		} else if result == "continue" {
 			continue // Продолжаем цикл при некорректном выборе
 		}
 

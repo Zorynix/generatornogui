@@ -1,12 +1,13 @@
 package main
 
 import (
+	"utils/utils"
+
 	_ "golang.org/x/sys/windows"
-	"utils/menu"
 )
 
 func main() {
-	//service.ServerTest()
-	menu.Menu()
-	//utils.Startapp()
+
+	utils.DBParse()
+	utils.Startapp()
 }
